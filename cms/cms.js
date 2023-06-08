@@ -15,6 +15,7 @@ const pool = mysql.createPool({
   database: 'cmss',
 });
 
+
 // Function to add a department
 function addDepartment() {
   inquirer
@@ -32,6 +33,79 @@ function addDepartment() {
         console.log('Department added successfully.');
         mainMenu();
       });
+    });
+}
+
+// Function to add a role
+function addRole() {
+  inquirer
+    .prompt([
+      {
+        name: 'title',
+        type: 'input',
+        message: 'Enter the role title:',
+      },
+      {
+        name: 'salary',
+        type: 'input',
+        message: 'Enter the role salary:',
+      },
+      {
+        name: 'department_id',
+        type: 'input',
+        message: 'Enter the department ID:',
+      },
+    ])
+    .then((answers) => {
+      const { title, salary, department_id } = answers;
+      pool.query(
+        'INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)',
+        [title, salary, department_id],
+        (error) => {
+          if (error) throw error;
+          console.log('Role added successfully.');
+          mainMenu();
+        }
+      );
+    });
+}
+
+// Function to add an employee
+function addEmployee() {
+  inquirer
+    .prompt([
+      {
+        name: 'first_name',
+        type: 'input',
+        message: 'Enter the employee first name:',
+      },
+      {
+        name: 'last_name',
+        type: 'input',
+        message: 'Enter the employee last name:',
+      },
+      {
+        name: 'role_id',
+        type: 'input',
+        message: 'Enter the role ID:',
+      },
+      {
+        name: 'manager_id',
+        type: 'input',
+        message: 'Enter the manager ID (optional):',
+      },
+    ])
+    .then((answers) => {
+      const { first_name, last_name, role_id, manager_id } = answers;
+      pool.query(
+        'INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)',
+        [first_name, last_name, role_id, manager_id],
+        (error) => {
+          if (error) throw error;
+          console.log('Employee added successfully.');
+          mainMenu();
+        }
+      );
     });
 }
 
@@ -91,6 +165,7 @@ function updateEmployee() {
     });
 }
 
+
 // Function to update employee roles
 function updateEmployeeRoles() {
   inquirer
@@ -119,3 +194,64 @@ function updateEmployeeRoles() {
       );
     });
 }
+
+// Main menu function
+function mainMenu() {
+  inquirer
+    .prompt([
+      {
+        name: 'choice',
+        type: 'list',
+        message: 'Select an option:',
+        choices: [
+          'Add Department',
+          'Add Role',
+          'Add Employee',
+          'View Departments',
+          'View Roles',
+          'View Employees',
+          'Update Employee Roles',
+          'Exit',
+        ],
+      },
+    ])
+    .then((answers) => {
+      const { choice } = answers;
+
+      switch (choice) {
+        case 'Add Department':
+          addDepartment();
+          break;
+        case 'Add Role':
+          addRole();
+          break;
+        case 'Add Employee':
+          addEmployee();
+          break;
+        case 'View Departments':
+          viewDepartments();
+          break;
+        case 'View Roles':
+          viewRoles();
+          break;
+        case 'View Employees':
+          viewEmployees();
+          break;
+        case 'Update Employee':
+          updateEmployee();
+          break;
+        case 'Update Employee Roles':
+          updateEmployeeRoles();
+          break;
+        case 'Exit':
+          console.log('Exiting CMS...');
+          process.exit();
+        default:
+          console.log('Invalid choice. Please select again.');
+          mainMenu();
+      }
+    });
+}
+
+// Call the mainMenu function to start the application
+mainMenu();

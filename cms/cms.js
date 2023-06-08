@@ -90,3 +90,32 @@ function updateEmployee() {
       );
     });
 }
+
+// Function to update employee roles
+function updateEmployeeRoles() {
+  inquirer
+    .prompt([
+      {
+        name: 'employee_id',
+        type: 'input',
+        message: 'Enter the employee ID:',
+      },
+      {
+        name: 'role_id',
+        type: 'input',
+        message: 'Enter the new role ID:',
+      },
+    ])
+    .then((answers) => {
+      const { employee_id, role_id } = answers;
+      pool.query(
+        'UPDATE employee SET role_id = ? WHERE id = ?',
+        [role_id, employee_id],
+        (error) => {
+          if (error) throw error;
+          console.log('Employee role updated successfully.');
+          mainMenu();
+        }
+      );
+    });
+}
